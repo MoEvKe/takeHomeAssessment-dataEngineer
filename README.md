@@ -20,6 +20,8 @@ You are given a raw dataset (`seeds/raw_events.csv`) containing:
 - Evolving schema (some events have fields others don't)
 
 **Your task is to build a dbt project that cleans this data and creates a dimensional model.**
+**Please do not use AI to write code for you in this project. We want to get as much YOU as possible.**
+**Please do not spend any more than 4 hours on this project. Focus on senior level work and complete as much as you can in that timeframe.**
 
 ---
 
