@@ -3,11 +3,11 @@ version: '1.0.0'
 
 profile: 'safestreets'
 
-model-paths: ["models"]
-analysis-paths: ["analyses"]
-test-paths: ["tests"]
-seed-paths: ["seeds"]
-macro-paths: ["macros"]
+model-paths: ["takeHomeAssessment-dataEngineer/models"]
+analysis-paths: ["takeHomeAssessment-dataEngineer/analyses"]
+test-paths: ["takeHomeAssessment-dataEngineer/tests"]
+seed-paths: ["takeHomeAssessment-dataEngineer/seeds"]
+macro-paths: ["takeHomeAssessment-dataEngineer/macros"]
 
 clean-targets:
   - "target"

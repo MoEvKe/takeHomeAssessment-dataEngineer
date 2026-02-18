@@ -5,6 +5,8 @@
 }}
 
 {#
+    ***Task 1 Complete. dbt test was successfull for all four columns***
+    
     Task 1: Data Ingestion & Cleaning
 
     Goal: Transform raw events into a clean, standardized format
@@ -17,8 +19,8 @@
         5. Filter out invalid records
 
     Known data issues to handle:
-        - Duplicate event_ids (evt_001, evt_016 appear twice)
-        - Multiple timestamp formats:
+        - Duplicate event_ids (evt_001, evt_016 appear twice) --Done
+        - Multiple timestamp formats: --Done
             * ISO 8601: "2024-01-15T10:30:00Z"
             * ISO with offset: "2024-01-15T08:00:00-05:00"
             * Space-separated: "2024-01-15 10:25:00"
@@ -26,10 +28,10 @@
             * Unix epoch: "1705320000"
             * Human readable: "Jan 16, 2024 10:15:30 AM"
             * European: "17-01-2024 20:15:00"
-        - Empty event_id (one record)
-        - Null device_id (one record)
-        - Case mismatch: "USR_100" vs "usr_100"
-        - Invalid timestamp: "not_a_timestamp"
+        - Empty event_id (one record) -- Done
+        - Null device_id (one record) -- Done
+        - Case mismatch: "USR_100" vs "usr_100" -- Done
+        - Invalid timestamp: "not_a_timestamp" -- Done
 
     Considerations:
         - Idempotency: dbt handles this via materialization
@@ -49,20 +51,96 @@ with source_data as (
 
 ),
 
--- YOUR CODE HERE: Add transformation CTEs
+clean_up as (
+    select 
+        event_id,
+        event_type,
+        device_id,
+        lower(user_id) as user_id, 
+        case    
+            when regexp_matches(timestamp, '^[0-9]{10}$')
+                then to_timestamp(timestamp::bigint)
+            when try_strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ') is not null
+                then try_strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
+            when try_strptime(timestamp, '%Y-%m-%dT%H:%M:%S%z') is not null
+                then try_strptime(timestamp, '%Y-%m-%dT%H:%M:%S%z') AT TIME ZONE 'UTC'
+            when try_strptime(timestamp, '%Y-%m-%d %H:%M:%S') is not null
+                then try_strptime(timestamp, '%Y-%m-%d %H:%M:%S') AT TIME ZONE 'UTC'
+            when try_strptime(timestamp, '%m/%d/%Y %I:%M:%S %p') is not null
+                then try_strptime(timestamp, '%m/%d/%Y %I:%M:%S %p') AT TIME ZONE 'UTC'
+            when try_strptime(timestamp, '%b %d, %Y %I:%M:%S %p') is not null
+                then try_strptime(timestamp, '%b %d, %Y %I:%M:%S %p') AT TIME ZONE 'UTC'
+            when try_strptime(timestamp, '%d-%m-%Y %H:%M:%S') is not null
+                then try_strptime(timestamp, '%d-%m-%Y %H:%M:%S') AT TIME ZONE 'UTC'
+            else null
+        end as event_ts_utc,
+        payload,
+        location,
+        device_metadata,
+        case 
+            when event_id is null or event_id = ''
+                then true
+            else false
+        end as is_missing_event_id,
+        case    
+            when event_type is null
+                then true
+            else false
+        end as is_missing_event_type,
+        case 
+            when timestamp is null 
+                then true
+            else false
+        end as is_missing_timestamp,
+        case when
+            case when regexp_matches(timestamp, '^[0-9]{10}$')
+                    then to_timestamp(timestamp::bigint)
+                when try_strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ') is not null
+                    then try_strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')
+                when try_strptime(timestamp, '%Y-%m-%dT%H:%M:%S%z') is not null
+                    then try_strptime(timestamp, '%Y-%m-%dT%H:%M:%S%z')
+                when try_strptime(timestamp, '%Y-%m-%d %H:%M:%S') is not null
+                    then try_strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+                else null
+            end is null
+            then true
+            else false
+        end as is_invalid_timestamp
+    from source_data
+    ),
+
+deduped as (
+    select *
+    from (
+        select 
+            *,
+            row_number() over(
+                partition by event_id
+                order by event_ts_utc desc nulls last
+            ) as rn 
+        from clean_up
+    )
+    where rn = 1
+),
+
 
 final as (
 
     select
-        -- YOUR CODE HERE: Define clean output columns
-        -- event_id,
-        -- event_type,
-        -- device_id,
-        -- user_id,
-        -- event_timestamp,  -- normalized to UTC
-        -- payload
-        *
-    from source_data
+
+        event_id,
+        event_type,
+        device_id,
+        user_id,
+        event_ts_utc,  -- normalized to UTC
+        payload,
+        is_missing_event_id,
+        is_missing_event_type,
+        is_missing_timestamp,
+        is_invalid_timestamp
+    from deduped
+    where is_missing_event_id = false
+        and is_invalid_timestamp = false
 
 )
 

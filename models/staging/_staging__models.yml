@@ -19,7 +19,7 @@ models:
         description: Device that generated the event (nullable for user-only events)
       - name: user_id
         description: User associated with the event (normalized to lowercase)
-      - name: event_timestamp
+      - name: event_ts_utc
         description: Event timestamp normalized to UTC
         tests:
           - not_null

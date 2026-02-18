@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: raw
     description: Raw event data loaded via dbt seed
-    schema: raw
+    schema: main_raw
     tables:
       - name: raw_events
         description: |
