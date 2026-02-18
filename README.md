@@ -41,6 +41,13 @@ Implement the staging model `models/staging/stg_events.sql` to:
 
 **Deliverable:** Complete `models/staging/stg_events.sql`
 
+** My Responses:**
+Task 1:
+dbt test was successful for all 4 tests!
+UTC cleanup was the most time consuming. Lost of case statements to catch all the possible timestamp types. Tried to keep it uniform and clean, but I'm open to another way to catch all of those if you know of one. 
+Changed the name of the event_date, and had to refactor it in the dbt_project.yml. Should have just left it, but I thought I had the time.
+
+As for invalid records, I'm of the opinion they should be flagged, and not removed. It's good to see the edge cases so we can adjust scripts when needed.
 ---
 
 ### Task 2 — Data Modeling (Required)
@@ -54,6 +61,15 @@ Implement the mart models in `models/marts/`:
 
 **Deliverable:** Complete the models in `models/marts/`
 
+** My Responses:**
+Task 2:
+I went with a single wide fact table since our data is limited for now. It keeps everything in one place and easy to find.
+
+This can show many motion events occur per device per day.
+We can throw a count on the alerts to see which users are getting the most, as well as the severity of the alerts.
+
+I would recommend breaking the fact table up by event_types if it gets too unwieldy. 
+It would be easy to support more demensions like location
 ---
 
 ### Task 3 — Analytics Queries (Required)

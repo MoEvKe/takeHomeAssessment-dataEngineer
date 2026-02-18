@@ -29,7 +29,33 @@
         - How it would scale as data grows
 #}
 
--- YOUR CODE HERE
 
-select
-    1 as placeholder  -- Remove this and implement your fact table
+
+with stg as (
+    select *
+    from {{ ref('stg_events')}}
+),
+
+typed as (
+    select 
+        event_id,
+        -- foreign keys
+        device_id,
+        user_id,
+
+        event_ts_utc,
+        cast(event_ts_utc as date) as event_date,
+        -- dimensions
+        event_type,
+
+        try_cast(json_extract(payload, '$.confidence') as double) as confidence_score,
+        try_cast(json_extract(payload, '$.duration_seconds') as integer) as duration_seconds,
+        json_extract(payload, '$.severity')::varchar as severity,
+        json_extract(payload, '$.object_type')::varchar as object_type
+    from stg
+)
+
+select * 
+from typed
+
+
