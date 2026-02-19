@@ -78,6 +78,9 @@ Kept it simple and went with the fields requested.
 
 This data will show us which devices are being used, when they are activated, and how active they are.
 Tracks the owner of the device.
+
+dim_users
+didn't spend much time. Just got the min and max event times, grabbed the platform data from the payload, and added some counts. 
 ---
 
 ### Task 3 — Analytics Queries (Required)
