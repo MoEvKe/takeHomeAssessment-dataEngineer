@@ -6,7 +6,7 @@
 
 {#
     ***Task 1 Complete. dbt test was successfull for all four columns***
-    
+
     Task 1: Data Ingestion & Cleaning
 
     Goal: Transform raw events into a clean, standardized format
@@ -134,6 +134,8 @@ final as (
         user_id,
         event_ts_utc,  -- normalized to UTC
         payload,
+        location,
+        device_metadata,
         is_missing_event_id,
         is_missing_event_type,
         is_missing_timestamp,

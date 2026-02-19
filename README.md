@@ -63,6 +63,7 @@ Implement the mart models in `models/marts/`:
 
 ** My Responses:**
 Task 2:
+fact_events
 I went with a single wide fact table since our data is limited for now. It keeps everything in one place and easy to find.
 
 This can show many motion events occur per device per day.
@@ -70,6 +71,13 @@ We can throw a count on the alerts to see which users are getting the most, as w
 
 I would recommend breaking the fact table up by event_types if it gets too unwieldy. 
 It would be easy to support more demensions like location
+
+dim_devices
+set as a Type 1 demension. History can be tracked through fact_events.
+Kept it simple and went with the fields requested. 
+
+This data will show us which devices are being used, when they are activated, and how active they are.
+Tracks the owner of the device.
 ---
 
 ### Task 3 — Analytics Queries (Required)

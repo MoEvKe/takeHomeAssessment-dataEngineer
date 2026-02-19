@@ -13,7 +13,7 @@
         - device_id (natural key)
         - First seen / last seen timestamps
         - Associated user_id (owner)
-        - Device metadata if available
+        - Device metadata if available  
         - Any derived attributes
 
     Document in README:
