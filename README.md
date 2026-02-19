@@ -225,10 +225,22 @@ The `seeds/raw_events.csv` contains intentional data quality issues for you to h
 ### How to Run
 
 <!-- Provide clear instructions for running your solution -->
-
+Assuming you've already cloned the repo, and are in the directory. Also, I had to move the dbt_projects.yml into another directory outside of the repo to get it to run on my machine. 
 ```bash
-# Your commands here
+# Make sure dbt can connect to the database. I used duckdb
+dbt debug
+# load raw data
+dbt seed
+# build all dbt models
+dbt run
+# run all tests
+dbt test
+
+dbt docs generate
+dbt docs serve
 ```
+
+
 
 ---
 
